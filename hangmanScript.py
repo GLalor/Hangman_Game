@@ -1,42 +1,62 @@
 import random
 import os
-clear = lambda: os.system('cls')
+if os.name == 'nt':
+    clear = lambda: os.system('cls')
+else: 
+    clear = lambda: os.system('clear')
 clear()
 
 words = ["case","list","wage","deer","sour"]
 global lettersGuessed
-lettersGuessed = []
+lettersGuessed = ['']
 global correctGues
 correctGues = []
+
 
 def main():
     gameLogic()
 
 def gameLogic():
     guesedWrong = 0
-    word = words[1] # words[random.randint(0,3)]
+    correctGuesses = 0
+    word = workPicker()
     printHangman(guesedWrong, correctGues, word)
     while guesedWrong <= 6:
-        #printCorrectLetters()
         letter = userInput(guesedWrong, word)
         if letter in word and letter != '':
-            correctGues.append(letter)
+            if word.count(letter) == 1:
+                correctGues[word.index(letter)] = letter
+                correctGuesses = correctGuesses + 1
+            else:
+                for i in range(0, len(word)):
+                    if word[i] == letter:
+                        correctGues[i] = letter
+                        correctGuesses = correctGuesses + 1
             printHangman(guesedWrong, correctGues, word)
-            print(correctGues)
+            if correctGuesses == len(word):
+                printWinner(guesedWrong, correctGues, word)
+                break
         else: 
             guesedWrong = guesedWrong + 1
             printHangman(guesedWrong, correctGues, word)
     printFinalWord(word)
 
+def workPicker():
+    word = words[random.randint(0,4)]
+    for i in range(0,len(word)):
+        correctGues.append("")
+    return word
+
 
 def userInput(guesedWrong, word):
     letter = ''
     print()
-    while letter not in lettersGuessed:
+    while letter in lettersGuessed:
         print ("\033[A                             \033[A")
         letter = input("Guess a letter:")
         if letter in lettersGuessed:
             print("Letter already guessed!")
+            letter = input("Guess a letter:")
         else:
             lettersGuessed.append(letter)
             return letter
@@ -63,9 +83,10 @@ def printHangman(guesedWrong, correct, word):
         printCorrectLetters(correctGues,word)
     else:
      printSpaces(word)
-
-def sortCorrectLetters(correct,wordPicked):
-    
+  
+def printWinner(guesedWrong, correct, word):
+    printHangman(guesedWrong, correct, word)
+    print("Winner Winner")
 
 def printSpaces(wordPicked):
     print()
@@ -75,13 +96,11 @@ def printSpaces(wordPicked):
 
 def printCorrectLetters(correct,wordPicked):
     print()
-    for i in range(0, len(correct)):
-        position = wordPicked.index(correct[i])
-        for y in range(0, len(wordPicked)):
-            if y != position:
-                print(" ", end="")
-            elif y == position:
-                print(correct[i], end="")
+    for i in range(0,len(correct)):
+        if correct[i] == "":
+            print(" ",end="")
+        else:
+            print(correct[i], end="")
     printSpaces(wordPicked)
 
 def printFinalWord(wordPicked):

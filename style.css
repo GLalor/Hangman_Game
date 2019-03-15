@@ -7,3 +7,15 @@ body{
 .container{
     position: centre;
 }
+
+.TheGallows{
+    visibility: hidden;
+}
+
+#CharIn{
+    visibility: hidden;
+}
+
+#StartGame{
+    visibility: visible;
+}
